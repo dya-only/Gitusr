@@ -12,10 +12,19 @@
     const resp = await fetch(`https://api.github.com/users/${ params.id }`).then(resp => resp.json())
     const oresp = await fetch(`https://api.github.com/users/${ params.id }/orgs`).then(resp => resp.json())
 
+    
+    if (oresp.length > 9) {
+      for (let i = 0; i < 9; i++) {
+        orgs[i] = oresp[i]
+      }
+    } else {
+      orgs = oresp
+    }
+    
     res = resp
-    orgs = oresp
-    console.log(res)
-    console.log(orgs)
+
+    // console.log(res)
+    // console.log(orgs)
 
     if (res.company == null) {
       res.company = "__"
@@ -76,11 +85,14 @@
   <div class="flex justify-center items-start flex-wrap">
 
     <!-- Organizations -->
-    <div class="org p-10 mb-5 mr-5 rounded-2xl drop-shadow-2xl bg-[#161B22] flex flex-wrap max-w-[500px]">
+    <div class="org-card p-10 mb-5 mr-5 rounded-2xl drop-shadow-2xl bg-[#161B22] flex justify-center items-center flex-wrap max-w-[400px]">
       { #each orgs as org }
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <img class="org-img m-2 rounded-2xl w-12 cursor-pointer transition ease-out hover:brightness-50" src={ org.avatar_url } alt="" on:click={ () => { window.open(`http://github.com/${org.login}`, '_blank') } } />
       { /each }
+
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <div class="org-more m-2 rounded-2xl w-12 h-12 cursor-pointer transition ease-out hover:brightness-50 bg-[#161B22] text-4xl flex justify-center" on:click={ () => { window.open(`http://github.com/${res.login}`, '_blank') } }>+</div>
     </div>
 
     <!-- Bio -->
