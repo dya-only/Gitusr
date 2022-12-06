@@ -10,8 +10,9 @@ module.exports = {
   },
   variants: {
     extend: {},
+    scrollbar: ['rounded']
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')({ nocompatible: true })],
   future: {
     purgeLayersByDefault: true,
     removeDeprecatedGapUtilities: true,
