@@ -8,10 +8,14 @@
   
   let res: any = {}
   let orgs: any = []
+  
   let _flws = []
   let flws = []
   let _flwn = []
   let flwn = []
+
+  let f_usr = []
+  let fl_usr = []
 
   onMount(async () => {
 
@@ -40,21 +44,33 @@
       const followers = await fetch(`https://api.github.com/users/${ params.id }/followers?page=${ i + 1 }`).then(resp => resp.json())
 
       followers.forEach((el: any) => {
-        _flws.push(el)
+        _flws.push({ login: el.login, avatar_url: el.avatar_url })
       })
 
     }
     flws = _flws
 
+    for (let j = 0; j < flws.length; j++) {
+      const f_profile = await fetch(`https://api.github.com/users/${ flws[j].login }`).then(resp => resp.json())
+      if (f_profile.location != null) { f_usr[j] = f_profile.location }
+      else { f_usr[j] = "" }
+    }
+
     for (let i = 0; i < p2; i++) {
       const following = await fetch(`https://api.github.com/users/${ params.id }/following?page=${ i + 1 }`).then(resp => resp.json())
 
       following.forEach((el: any) => {
-        _flwn.push(el)
+        _flwn.push({ login: el.login, avatar_url: el.avatar_url })
       })
 
     }
     flwn = _flwn
+
+    for (let j = 0; j < flwn.length; j++) {
+      const f_profile = await fetch(`https://api.github.com/users/${ flwn[j].login }`).then(resp => resp.json())
+      if (f_profile.location != null) { fl_usr[j] = f_profile.location }
+      else { fl_usr[j] = "" }
+    }
 
     console.log(flwn)
   })
@@ -131,11 +147,13 @@
       <!-- Followers -->
       <div class="flw-card p-10 mb-5 mr-5 rounded-l-2xl rounded-r-2xl drop-shadow-2xl bg-[#161B22] max-h-[300px] w-[600px] overflow-auto scrollbar scrollbar-thumb-neutral-700 scrollbar-thumb-rounded-full scrollbar-thin flex justify-start items-start flex-col">
         <span class="font-bold text-xl mb-8">Followers</span>
-        { #each flws as flw }
+        { #each flws as flw, i }
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${flw.login}`, '_blank') } }>
             <img class="flw-img m-2 rounded-2xl w-12" src={ flw.avatar_url } alt="" />
-            <div class="flw-name font-bold">{ flw.login }</div>
+            <div class="flw-name font-bold mr-12">{ flw.login }</div>
+            <Fa class="mr-2 opacity-75" icon={faLocationDot} fw size="md" />
+            <div class="flw-company font-normal opacity-75 w-[200px] truncate">{ f_usr[i] != null ? f_usr[i] : "" }</div>
           </div>
         { /each }
       </div>
@@ -143,11 +161,13 @@
       <!-- Following -->
       <div class="flw-card p-10 mb-5 mr-5 rounded-l-2xl rounded-r-2xl drop-shadow-2xl bg-[#161B22] max-h-[300px] w-[600px] overflow-auto scrollbar scrollbar-thumb-neutral-700 scrollbar-thumb-rounded-full scrollbar-thin flex justify-start items-start flex-col">
         <span class="font-bold text-xl mb-8">Following</span>
-        { #each flwn as fln }
+        { #each flwn as fln, i }
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${fln.login}`, '_blank') } }>
             <img class="flw-img m-2 rounded-2xl w-12" src={ fln.avatar_url } alt="" />
             <div class="flw-name font-bold">{ fln.login }</div>
+            <Fa class="mr-2 opacity-75" icon={faLocationDot} fw size="md" />
+            <div class="fln-company font-normal opacity-75 w-[200px] truncate">{ fl_usr[i] != null ? fl_usr[i] : "" }</div>
           </div>
         { /each }
       </div>
