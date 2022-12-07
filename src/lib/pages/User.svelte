@@ -14,9 +14,6 @@
   let _flwn = []
   let flwn = []
 
-  let f_usr = []
-  let fl_usr = []
-
   onMount(async () => {
 
     const resp = await fetch(`https://api.github.com/users/${ params.id }`).then(resp => resp.json())
@@ -50,12 +47,6 @@
     }
     flws = _flws
 
-    for (let j = 0; j < flws.length; j++) {
-      const f_profile = await fetch(`https://api.github.com/users/${ flws[j].login }`).then(resp => resp.json())
-      if (f_profile.location != null) { f_usr[j] = f_profile.location }
-      else { f_usr[j] = "" }
-    }
-
     for (let i = 0; i < p2; i++) {
       const following = await fetch(`https://api.github.com/users/${ params.id }/following?page=${ i + 1 }`).then(resp => resp.json())
 
@@ -66,13 +57,6 @@
     }
     flwn = _flwn
 
-    for (let j = 0; j < flwn.length; j++) {
-      const f_profile = await fetch(`https://api.github.com/users/${ flwn[j].login }`).then(resp => resp.json())
-      if (f_profile.location != null) { fl_usr[j] = f_profile.location }
-      else { fl_usr[j] = "" }
-    }
-
-    console.log(flwn)
   })
 
 </script>
@@ -152,8 +136,6 @@
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${flw.login}`, '_blank') } }>
             <img class="flw-img m-2 rounded-2xl w-12" src={ flw.avatar_url } alt="" />
             <div class="flw-name font-bold mr-12">{ flw.login }</div>
-            <Fa class="mr-2 opacity-75" icon={faLocationDot} fw size="md" />
-            <div class="flw-company font-normal opacity-75 w-[200px] truncate">{ f_usr[i] != null ? f_usr[i] : "" }</div>
           </div>
         { /each }
       </div>
@@ -166,8 +148,6 @@
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${fln.login}`, '_blank') } }>
             <img class="flw-img m-2 rounded-2xl w-12" src={ fln.avatar_url } alt="" />
             <div class="flw-name font-bold">{ fln.login }</div>
-            <Fa class="mr-2 opacity-75" icon={faLocationDot} fw size="md" />
-            <div class="fln-company font-normal opacity-75 w-[200px] truncate">{ fl_usr[i] != null ? fl_usr[i] : "" }</div>
           </div>
         { /each }
       </div>
