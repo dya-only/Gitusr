@@ -13,6 +13,19 @@
   let flws = []
   let _flwn = []
   let flwn = []
+  let _flws_i = []
+  let flws_i = []
+  let _flwn_i = []
+  let flwn_i = []
+
+  let _notFollower = []
+  let notFollower = []
+  let _notFollower_i = []
+  let notFollower_i = []
+  let _notFollowing = []
+  let notFollowing = []
+  let _notFollowing_i = []
+  let notFollowing_i = []
 
   onMount(async () => {
 
@@ -21,8 +34,6 @@
 
     orgs = oresp
     res = resp
-    console.log(res)
-    // console.log(orgs)
     
     if (res.company == null) {
       res.company = "__"
@@ -41,21 +52,45 @@
       const followers = await fetch(`https://api.github.com/users/${ params.id }/followers?page=${ i + 1 }`).then(resp => resp.json())
 
       followers.forEach((el: any) => {
-        _flws.push({ login: el.login, avatar_url: el.avatar_url })
+        // _flws.push({ login: el.login, avatar_url: el.avatar_url })
+        _flws.push(el.login)
+        _flws_i.push(el.avatar_url)
       })
 
     }
     flws = _flws
+    flws_i = _flws_i
 
     for (let i = 0; i < p2; i++) {
       const following = await fetch(`https://api.github.com/users/${ params.id }/following?page=${ i + 1 }`).then(resp => resp.json())
 
       following.forEach((el: any) => {
-        _flwn.push({ login: el.login, avatar_url: el.avatar_url })
+        // _flwn.push({ login: el.login, avatar_url: el.avatar_url })
+        _flwn.push(el.login)
+        _flwn_i.push(el.avatar_url)
       })
-
     }
     flwn = _flwn
+    flwn_i = _flwn_i
+
+    for (let i = 0; i < flws.length; i++) { // You don't following
+      if (!flwn.includes(flws[i])) {
+        _notFollowing.push(flws[i])
+        _notFollowing_i.push(flws_i[i])
+      }
+    }
+    notFollowing = _notFollowing
+    notFollowing_i = _notFollowing_i
+
+    for (let i = 0; i < flwn.length; i++) { // Don't follow you
+      if (!flws.includes(flwn[i])) {
+        notFollower.push(flwn[i])
+        _notFollower_i.push(flwn_i[i])
+      }
+    }
+    notFollower = _notFollower
+    notFollower_i = _notFollower_i
+    console.log(notFollower)
 
   })
 
@@ -128,14 +163,42 @@
 
     <div class="flex justify-center items-end">
 
+      <!-- You don't follow -->
+      <div class="flw-card p-10 mb-5 mr-5 rounded-l-2xl rounded-r-2xl drop-shadow-2xl bg-[#161B22] max-h-[300px] w-[600px] overflow-auto scrollbar scrollbar-thumb-neutral-700 scrollbar-thumb-rounded-full scrollbar-thin flex justify-start items-start flex-col">
+        <span class="font-bold text-xl mb-8">You don't follow</span>
+        { #each notFollowing as fl, i }
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${ fl }`, '_blank') } }>
+            <img class="flw-img m-2 rounded-2xl w-12" src={ notFollowing_i[i] } alt="" />
+            <div class="flw-name font-bold mr-12">{ notFollowing[i] }</div>
+          </div>
+        { /each }
+      </div>
+
+      <!-- Don't follow you -->
+      <div class="flw-card p-10 mb-5 mr-5 rounded-l-2xl rounded-r-2xl drop-shadow-2xl bg-[#161B22] max-h-[300px] w-[600px] overflow-auto scrollbar scrollbar-thumb-neutral-700 scrollbar-thumb-rounded-full scrollbar-thin flex justify-start items-start flex-col">
+        <span class="font-bold text-xl mb-8">Don't follow you</span>
+        { #each notFollower as flw, i }
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${ flw }`, '_blank') } }>
+            <img class="flw-img m-2 rounded-2xl w-12" src={ notFollower_i[i] } alt="" />
+            <div class="flw-name font-bold mr-12">{ notFollower[i] }</div>
+          </div>
+        { /each }
+      </div>
+
+    </div>
+
+    <div class="flex justify-center items-end">
+
       <!-- Followers -->
       <div class="flw-card p-10 mb-5 mr-5 rounded-l-2xl rounded-r-2xl drop-shadow-2xl bg-[#161B22] max-h-[300px] w-[600px] overflow-auto scrollbar scrollbar-thumb-neutral-700 scrollbar-thumb-rounded-full scrollbar-thin flex justify-start items-start flex-col">
         <span class="font-bold text-xl mb-8">Followers</span>
         { #each flws as flw, i }
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${flw.login}`, '_blank') } }>
-            <img class="flw-img m-2 rounded-2xl w-12" src={ flw.avatar_url } alt="" />
-            <div class="flw-name font-bold mr-12">{ flw.login }</div>
+            <img class="flw-img m-2 rounded-2xl w-12" src={ flws_i[i] } alt="" />
+            <div class="flw-name font-bold mr-12">{ flws[i] }</div>
           </div>
         { /each }
       </div>
@@ -146,8 +209,8 @@
         { #each flwn as fln, i }
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <div class="flex justify-start items-center transition ease-in-out hover:brightness-50 hover:0 cursor-pointer" on:click={ () => { window.open(`http://github.com/${fln.login}`, '_blank') } }>
-            <img class="flw-img m-2 rounded-2xl w-12" src={ fln.avatar_url } alt="" />
-            <div class="flw-name font-bold">{ fln.login }</div>
+            <img class="flw-img m-2 rounded-2xl w-12" src={ flwn_i[i] } alt="" />
+            <div class="flw-name font-bold">{ flwn[i] }</div>
           </div>
         { /each }
       </div>
