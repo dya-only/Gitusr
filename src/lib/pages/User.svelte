@@ -84,7 +84,7 @@
 
     for (let i = 0; i < flwn.length; i++) { // Don't follow you
       if (!flws.includes(flwn[i])) {
-        notFollower.push(flwn[i])
+        _notFollower.push(flwn[i])
         _notFollower_i.push(flwn_i[i])
       }
     }
